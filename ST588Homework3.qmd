@@ -1,0 +1,98 @@
+---
+title: |
+  | Homework 3
+  | Matt Bray
+format: html
+editor: visual
+---
+
+# Task 1
+
+## Load in Dataset
+
+```{r}
+load("hw2_list.rda")
+```
+
+## Add character column to Dataframes in list to hold status
+
+```{r}
+bp_list[[1]]$status<-character(nrow(bp_list[[1]]))
+bp_list[[2]]$status<-character(nrow(bp_list[[2]]))
+```
+
+## Add appropriate category to status in dataframe \[1\], Treatment Group
+
+```{r}
+for (i in 1:nrow(bp_list[[1]])){
+  if (bp_list[[1]]$post_bp[i]<= 120) { 
+  bp_list[[1]]$status[i] <- "optimal"
+ } else if (bp_list[[1]]$post_bp[i] <= 130){
+  bp_list[[1]]$status[i] <- "borderline"
+ } else if (bp_list[[1]]$post_bp[i] > 130) {
+  bp_list[[1]]$status[i] <- "high"
+ } else {
+  "Error"
+ }
+}
+```
+
+## Add appropriate category to status in dataframe \[2\], Placebo Group
+
+```{r}
+for (i in 1:nrow(bp_list[[2]])){
+  if (bp_list[[2]]$post_bp[i]<= 120) { 
+  bp_list[[2]]$status[i] <- "optimal"
+ } else if (bp_list[[2]]$post_bp[i] <= 130){
+  bp_list[[2]]$status[i] <- "borderline"
+ } else if (bp_list[[2]]$post_bp[i] > 130) {
+  bp_list[[2]]$status[i] <- "high"
+ } else {
+  "Error"
+ }
+}
+```
+
+```{r}
+knitr::kable(bp_list[1])
+knitr::kable(bp_list[2])
+```
+
+# Task 2
+
+## Create Function
+
+# Meaner Function
+
+```{r}
+meaner <- function(dataSet, stat = "mean") {
+  my_fun<-get(stat)
+  w<-get(stat)
+  y<-vector()
+  x<-list()
+  z<-data.frame()
+  x<-list("pre_bp", "post_bp", "diff_bp")
+for(i in x){
+  y[i]<-my_fun(bp_list[[1]][,i])
+}
+for(j in 1:length(bp_list)){
+ for(i in x){
+  z[i,j]<-my_fun(bp_list[[j]][,i])
+ }
+} 
+names(z)<-paste(names(bp_list))
+rownames(z) <- paste(c(rownames(z)), stat)
+z$statistic <- rownames(z)
+return(z)
+}
+```
+
+# Meaner Function Output with different Stats
+
+```{r}
+knitr::kable(meaner(bp_list))
+knitr::kable(meaner(bp_list, stat="var"))
+knitr::kable(meaner(bp_list, stat="sd"))
+knitr::kable(meaner(bp_list, stat="min"))
+knitr::kable(meaner(bp_list, stat="max"))
+```
